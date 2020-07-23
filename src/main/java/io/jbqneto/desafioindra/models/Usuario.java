@@ -1,7 +1,6 @@
 package io.jbqneto.desafioindra.models;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +21,7 @@ public class Usuario implements Serializable {
 	
 	private String email;
 	
-	private String username;
+	private String login;
 	
 	private String senha;
 
@@ -50,12 +49,12 @@ public class Usuario implements Serializable {
 		this.email = email;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getLogin() {
+		return login;
 	}
 
-	public void setUsername(String username) {
-		this.username = username;
+	public void setLogin(String usuario) {
+		this.login = usuario;
 	}
 
 	public String getSenha() {
