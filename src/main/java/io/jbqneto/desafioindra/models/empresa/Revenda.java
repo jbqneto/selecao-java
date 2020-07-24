@@ -29,13 +29,14 @@ public class Revenda implements Serializable{
 	private String nome;
 	
 	@Column(name = "CNPJ", nullable = false, length = 14)
+	@NotEmpty(message = "Preencha o CNPJ da revenda")
 	private String cnpj;
 	
 	@Column(name = "BANDEIRA")
 	private String bandeira;
 
 	@ManyToOne
-	@JoinColumn(name = "MUNICIPIO_ID")
+	@JoinColumn(name = "MUNICIPIO_ID", nullable = false)
 	private Municipio municipio;
 
 	public long getId() {
