@@ -1,6 +1,8 @@
 package io.jbqneto.desafioindra.controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.jbqneto.desafioindra.imports.historico.ImportadorHistorico;
+import io.jbqneto.desafioindra.imports.historico.ImportadorHistoricoCsv;
 import io.jbqneto.desafioindra.models.empresa.Historico;
 import io.jbqneto.desafioindra.models.empresa.Revenda;
 import io.jbqneto.desafioindra.repositories.empresa.HistoricoRepository;
@@ -38,8 +42,35 @@ public class HistoricoController {
 	RevendaRepository revendaRepo;
 	
 	@PostMapping("/historico/importar")
-	public void importarArquivo(@RequestParam("arquivo") MultipartFile arquivo) {
-		//TODO
+	public void importarArquivo(@RequestParam MultipartFile arquivo) {
+		log.info(arquivo.getContentType());
+		log.info(arquivo.getName());
+		log.info(arquivo.getOriginalFilename());
+		
+		try {
+			ImportadorHistorico importadorCsv = new ImportadorHistoricoCsv();
+			List<Historico> historicos = importadorCsv.importar(arquivo);
+			log.info("arquivos: " + historicos.size());
+			
+			//UF|ID
+			Map<String, Long> mapEstadoPorUfId = new HashMap<String, Long>();
+			
+			//CNPJ|ID
+			Map<String, Long> mapRevendaCnpjId = new HashMap<String, Long>();
+					
+			for (Historico historico: historicos) {
+				
+				
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.debug(e);
+			log.debug("Erro ao importar o CSV", e);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno. Tente novamente mais tarde.");
+		}
+		
+		
 	}
 	
 	@GetMapping("/historico")
