@@ -2,7 +2,6 @@ package io.jbqneto.desafioindra.models.endereco;
 
 import java.io.Serializable;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,7 +22,7 @@ public class Municipio implements Serializable {
 	@Column(name = "NOME", nullable = false)
 	private String nome;
 	
-	@ManyToOne(cascade = {CascadeType.ALL})
+	@ManyToOne
 	@JoinColumn(name = "ESTADO_ID")
 	private Estado estado;
 

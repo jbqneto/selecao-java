@@ -2,9 +2,8 @@ package io.jbqneto.desafioindra.models.empresa;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Digits;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
 public class Historico implements Serializable {
@@ -24,11 +28,13 @@ public class Historico implements Serializable {
 	private long id;
 	
 	@Column(name = "DATA_COLETA", nullable = false)
-	@NotEmpty(message = "Preencha a data da coleta")
-	private Date dataColeta;
+	@JsonFormat(pattern = "dd/MM/yyyy")
+	@DateTimeFormat(pattern = "dd/MM/yyyy")
+	private LocalDate dataColeta;
 	
-	@Column(name = "VALOR_VENDA", nullable = false)
-	@NotEmpty(message = "Preencha o valor de venda")
+	@Column(name = "VALOR_VENDA")
+	@Digits(integer = 4, fraction = 3)
+	@DecimalMin(value = "0.1", message = "Informe o valor de venda.")
 	private BigDecimal valorVenda;
 	
 	@Column(name = "VALOR_COMPRA")
@@ -40,7 +46,7 @@ public class Historico implements Serializable {
 	@Column(name = "PRODUTO")
 	private String produto;
 	
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne
 	@JoinColumn(name = "REVENDA_ID")
 	private Revenda revenda;
 
@@ -52,11 +58,11 @@ public class Historico implements Serializable {
 		this.id = id;
 	}
 
-	public Date getDataColeta() {
+	public LocalDate getDataColeta() {
 		return dataColeta;
 	}
 
-	public void setDataColeta(Date dataColeta) {
+	public void setDataColeta(LocalDate dataColeta) {
 		this.dataColeta = dataColeta;
 	}
 
