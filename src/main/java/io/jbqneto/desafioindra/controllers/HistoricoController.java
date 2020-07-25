@@ -32,10 +32,13 @@ import io.jbqneto.desafioindra.repositories.empresa.HistoricoRepository;
 import io.jbqneto.desafioindra.repositories.empresa.RevendaRepository;
 import io.jbqneto.desafioindra.repositories.endereco.EstadoRepository;
 import io.jbqneto.desafioindra.repositories.endereco.MunicipioRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/api")
+@Api(value = "API de Histórico de compra/venda de combustível")
 public class HistoricoController {
 	
 	static Log log = LogFactory.getLog(HistoricoController.class.getClass());
@@ -53,6 +56,7 @@ public class HistoricoController {
 	MunicipioRepository municipioRepo;
 	
 	@PostMapping("/historico/importar")
+	@ApiOperation(value = "Importa os históricos de venda por UPLOAD de arquivo CSV.")
 	public List<Historico> importarArquivo(@RequestParam MultipartFile arquivo) {
 		log.info(arquivo.getContentType());
 		log.info(arquivo.getName());
@@ -155,11 +159,13 @@ public class HistoricoController {
 	}
 	
 	@GetMapping("/historico")
+	@ApiOperation(value = "Retorna lista de Históricos cadastrados no sistema")
 	public List<Historico> getHistoricos() {
 		return this.historicoRepo.findAll();
 	}
 	
 	@GetMapping("/historico/{id}")
+	@ApiOperation(value = "Retorna um determiando histórico pelo ID")
 	public Historico getHistorico(@PathVariable("id") long id) {
 		
 		Historico historico = this.historicoRepo.findById(id);
@@ -171,6 +177,7 @@ public class HistoricoController {
 	}
 	
 	@DeleteMapping("/historico/{id}")
+	@ApiOperation(value = "Deleta um histórico pelo ID passado.")
 	public void deleteHistorico(@PathVariable("id") long id) {
 		Historico historico = this.getHistorico(id);
 	
@@ -178,6 +185,7 @@ public class HistoricoController {
 	}
 	
 	@PostMapping("/historico")
+	@ApiOperation(value = "Cria um novo histórico")
 	public Historico createHistorico(@RequestBody Historico historico) {
 		try {
 			Revenda revenda = revendaRepo.findById(historico.getRevenda().getId());		
@@ -199,6 +207,7 @@ public class HistoricoController {
 	}
 	
 	@PutMapping("/historico/{id}")
+	@ApiOperation(value = "Atualiza os dados de uma determinado Histórico com base no ID e CORPO da requisição.")
 	public Historico updateHistorico(@PathVariable("id") long id,  @RequestBody Historico historico) {
 		
 		Historico historiById = getHistorico(id);

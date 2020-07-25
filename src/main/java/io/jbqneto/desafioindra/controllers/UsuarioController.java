@@ -20,27 +20,33 @@ import io.jbqneto.desafioindra.models.Usuario;
 import io.jbqneto.desafioindra.repositories.UsuarioRepository;
 import io.jbqneto.desafioindra.security.encoders.BCryptEncoder;
 import io.jbqneto.desafioindra.security.encoders.StringEncoder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/api")
+@Api(value="API de Usuario")
 public class UsuarioController {
 	
 	@Autowired
 	UsuarioRepository usuarioRepo;
 	
 	@GetMapping("/usuario")
+	@ApiOperation(value = "Retorna a lista de usuários cadastrados no sistema")
 	public List<Usuario> getUsuarios() {
 		return usuarioRepo.findAll();
 	}
 	
 	@GetMapping("/usuario/{id}")
+	@ApiOperation(value = "Retorna usuário definido no ID")
 	public Usuario getUsuario(@PathVariable long id) {
 		return usuarioRepo.findById(id);
 	}
 	
 	@DeleteMapping("/usuario/{id}")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	@ApiOperation(value = "Deleta o usuário definido no ID")
 	public void deleteUsuario(@PathVariable long id) {
 		
 		Usuario usuario = usuarioRepo.findById(id);
@@ -52,6 +58,7 @@ public class UsuarioController {
 	}
 	
 	@PutMapping("/usuario/{id}")
+	@ApiOperation(value = "Edita o usuário com base no ID e CONTEUDO passados na operação.")
 	public Usuario editUsuario(@PathVariable(value="id") long id, @RequestBody Usuario usuario) {
 		try {
 			
@@ -76,6 +83,7 @@ public class UsuarioController {
 	
 	@PostMapping("/usuario")
 	@ResponseStatus(code = HttpStatus.CREATED, value = HttpStatus.CREATED)
+	@ApiOperation(value = "Cria um novo usuário")
 	public Usuario saveUsuario(@RequestBody Usuario usuario) {
 		try {			
 			
