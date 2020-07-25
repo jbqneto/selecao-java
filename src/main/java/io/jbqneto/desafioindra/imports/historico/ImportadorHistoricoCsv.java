@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -79,8 +81,13 @@ public class ImportadorHistoricoCsv implements ImportadorHistorico {
 				}
 
 				try {
+					
+					String[] cols = line.split(COMMA_DELIMITER);
+					
+					if (cols.length < 10)
+						continue;
 
-					Historico historico = readHistoricoFromLine(line.split(COMMA_DELIMITER), count);
+					Historico historico = readHistoricoFromLine(cols, count);
 					historicos.add(historico);
 					count++;
 				} catch (Exception e) {
@@ -115,8 +122,11 @@ public class ImportadorHistoricoCsv implements ImportadorHistorico {
 		Revenda revenda = new Revenda();
 		revenda.setMunicipio(municipio);
 		revenda.setNome(colunas[3]);
-		revenda.setCnpj(colunas[4]);
 		revenda.setBandeira(colunas[10]);
+		
+		String strCnpj = colunas[4];
+		
+		revenda.setCnpj(strCnpj);
 
 		Historico historico = new Historico();
 		historico.setRevenda(revenda);

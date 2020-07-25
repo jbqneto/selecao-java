@@ -21,7 +21,7 @@ public class Estado implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 	
-	@Column(name = "UF", length = 2)
+	@Column(name = "UF", length = 2, unique = true)
 	@NotBlank(message = "Necessário preencher a UF do estado.")
 	private String uf;
 	

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotEmpty;
 
 import io.jbqneto.desafioindra.models.endereco.Municipio;
@@ -36,7 +37,7 @@ public class Revenda implements Serializable{
 	@Column(name = "BANDEIRA")
 	private String bandeira;
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	@JoinColumn(name = "MUNICIPIO_ID", nullable = false)
 	private Municipio municipio;
 
