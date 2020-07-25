@@ -167,13 +167,6 @@ public class HistoricoController {
 		return this.historicoRepo.findAll();
 	}
 	
-	@GetMapping("/historico/uf/{uf}")
-	@ApiOperation(value = "Retorna lista de históricos pela UF")
-	public List<Historico> getHistoricoPorUf(@PathVariable String uf) {
-		
-		return historicoRepo.findByRevendaMunicipioEstadoUf(uf);
-	}
-	
 	/**
 	 * TODO Corrigir (nao deu tempo)
 	@GetMapping("/historico/preco/{uf}")
@@ -182,16 +175,24 @@ public class HistoricoController {
 		
 		return historicoRepo.findMediaPrecoCombustiveisPorUf(uf);
 	} */
+
+	
+	@GetMapping("/historico/uf/{uf}")
+	@ApiOperation(value = "Retorna lista de históricos pela UF")
+	public List<Historico> getHistoricoPorUf(@PathVariable String uf) {
+		
+		return historicoRepo.findByRevendaMunicipioEstadoUf(uf);
+	}
 	
 	@GetMapping("/historico/regiao/{regiao}")
-	@ApiOperation(value = "Retorna lista de históricos pela UF")
+	@ApiOperation(value = "Retorna lista de históricos pela regiao")
 	public List<Historico> getHistoricoPorRegiao(@PathVariable String regiao) {
 		
 		return historicoRepo.findByRevendaMunicipioEstadoUf(regiao);
 	}
 	
 	@GetMapping("/historico/municipio/{municipio}")
-	@ApiOperation(value = "Retorna lista de históricos pela UF")
+	@ApiOperation(value = "Retorna lista de históricos pelo nome do municipio")
 	public List<Historico> getHistoricoPorNomeMunicipio(@PathVariable String municipio) {
 		
 		return historicoRepo.findByRevendaMunicipioNome(municipio);
