@@ -1,6 +1,9 @@
 package io.jbqneto.desafioindra.controllers;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,10 +22,16 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.jbqneto.desafioindra.imports.historico.ImportadorHistorico;
+import io.jbqneto.desafioindra.imports.historico.ImportadorHistoricoCsv;
 import io.jbqneto.desafioindra.models.empresa.Historico;
 import io.jbqneto.desafioindra.models.empresa.Revenda;
+import io.jbqneto.desafioindra.models.endereco.Estado;
+import io.jbqneto.desafioindra.models.endereco.Municipio;
 import io.jbqneto.desafioindra.repositories.empresa.HistoricoRepository;
 import io.jbqneto.desafioindra.repositories.empresa.RevendaRepository;
+import io.jbqneto.desafioindra.repositories.endereco.EstadoRepository;
+import io.jbqneto.desafioindra.repositories.endereco.MunicipioRepository;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -37,9 +46,112 @@ public class HistoricoController {
 	@Autowired
 	RevendaRepository revendaRepo;
 	
+	@Autowired
+	EstadoRepository estadoRepo;
+	
+	@Autowired
+	MunicipioRepository municipioRepo;
+	
 	@PostMapping("/historico/importar")
-	public void importarArquivo(@RequestParam("arquivo") MultipartFile arquivo) {
-		//TODO
+	public List<Historico> importarArquivo(@RequestParam MultipartFile arquivo) {
+		log.info(arquivo.getContentType());
+		log.info(arquivo.getName());
+		log.info(arquivo.getOriginalFilename());
+		
+		try {
+			ImportadorHistorico importadorCsv = new ImportadorHistoricoCsv();
+			List<Historico> historicos = importadorCsv.importar(arquivo);
+			log.info("arquivos: " + historicos.size());
+			
+			//Maps para evitar insercao duplicada
+			//UF|ID
+			Map<String, Long> mapEstadoPorUfId = new HashMap<String, Long>();
+			
+			//CNPJ|ID
+			Map<String, Long> mapRevendaCnpjId = new HashMap<String, Long>();
+			
+			List<Historico> historicosSalvos = new ArrayList<Historico>();
+			
+			for (Historico historico: historicos) {
+				
+				try {
+					Revenda revenda = historico.getRevenda();
+					Municipio municipio = revenda.getMunicipio();
+					Estado estado = municipio.getEstado();
+					
+					String uf = estado.getUf();
+					String cnpjRevenda = revenda.getCnpj();
+					
+					if (mapRevendaCnpjId.containsKey(cnpjRevenda)) {
+						revenda.setId(mapRevendaCnpjId.get(cnpjRevenda));
+					} else {
+						Revenda revendaPorCnpj = revendaRepo.findByCnpj(cnpjRevenda);
+						
+						if (revendaPorCnpj != null) {
+							revenda.setId(revendaPorCnpj.getId());
+						}
+						
+					}
+					
+					if (revenda.getId() > 0) {
+						historico.setRevenda(revenda);
+					} else {
+						if (mapEstadoPorUfId.containsKey(estado.getUf())) {
+							estado.setId(mapEstadoPorUfId.get(uf));
+						} else {
+							Estado estadoPorUf = estadoRepo.findByUf(uf);
+							
+							if (estadoPorUf == null) {
+								estado = estadoRepo.save(estado);
+							} else {
+								estado.setId(estadoPorUf.getId());
+							}
+							
+							mapEstadoPorUfId.put(uf, estado.getId());
+							
+						}
+						
+						Municipio municipioExistente = municipioRepo.findByEstadoIdAndNome(estado.getId(), municipio.getNome());
+						
+						if (municipioExistente != null) {
+							municipio.setId(municipioExistente.getId());
+						} else {
+							municipio = municipioRepo.save(municipio);
+						}
+						
+						Municipio municipioRevenda = new Municipio();
+						municipioRevenda.setId(municipio.getId());
+
+						revenda.setMunicipio(municipioRevenda);
+						
+						revendaRepo.save(revenda);
+					}
+					
+					historico.setRevenda(revenda);
+					mapRevendaCnpjId.put(cnpjRevenda, revenda.getId());
+					
+					historico = createHistorico(historico);			
+					
+					historicosSalvos.add(historico);
+					
+				} catch (Exception e) {
+					log.info("Erro ao importar historico", e);
+				}
+				
+			}
+			
+			log.info("salvos: " + historicosSalvos.size());
+			
+			return historicosSalvos;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			log.debug(e);
+			log.debug("Erro ao importar o CSV", e);
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Erro interno. Tente novamente mais tarde.");
+		}
+		
+		
 	}
 	
 	@GetMapping("/historico")

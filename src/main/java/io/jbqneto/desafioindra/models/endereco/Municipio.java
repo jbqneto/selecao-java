@@ -25,7 +25,7 @@ public class Municipio implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "ESTADO_ID")
 	private Estado estado;
-
+	
 	public long getId() {
 		return id;
 	}
