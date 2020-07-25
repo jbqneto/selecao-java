@@ -20,10 +20,13 @@ import io.jbqneto.desafioindra.models.empresa.Revenda;
 import io.jbqneto.desafioindra.models.endereco.Municipio;
 import io.jbqneto.desafioindra.repositories.empresa.RevendaRepository;
 import io.jbqneto.desafioindra.repositories.endereco.MunicipioRepository;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping(value = "/api")
+@Api(value = "API de Revenda")
 public class RevendaController {
 
 	@Autowired
@@ -33,11 +36,13 @@ public class RevendaController {
 	private MunicipioRepository municipioRepo;
 	
 	@GetMapping("/revenda")
+	@ApiOperation(value = "Retorna lista de revendas.")
 	public List<Revenda> getRevendas() {
 		return revendaRepo.findAll();
 	}
 	
 	@GetMapping("/revenda/{id}")
+	@ApiOperation(value = "Retorna a revenda de determinado ID")
 	public Revenda getRevenda(@PathVariable long id) {
 		
 		Revenda revenda = revendaRepo.findById(id);
@@ -50,6 +55,7 @@ public class RevendaController {
 	
 	@DeleteMapping("/revenda/{id}")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	@ApiOperation(value = "Deleta a revenda informada pelo ID")
 	public void deleteRevenda(@PathVariable long id) {
 		
 		Revenda revenda = revendaRepo.findById(id);
@@ -61,6 +67,7 @@ public class RevendaController {
 	
 	@PostMapping("/revenda")
 	@ResponseStatus(code = HttpStatus.CREATED, value = HttpStatus.CREATED)
+	@ApiOperation(value = "Cria uma nova Revenda")
 	public Revenda saveRevenda(@RequestBody Revenda revenda) {
 		
 		long id = revenda.getMunicipio().getId();
