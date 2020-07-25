@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import io.jbqneto.desafioindra.database.dao.query.IHistoricoMediaPorUf;
 import io.jbqneto.desafioindra.imports.historico.ImportadorHistorico;
 import io.jbqneto.desafioindra.imports.historico.ImportadorHistoricoCsv;
 import io.jbqneto.desafioindra.models.empresa.Historico;
@@ -56,6 +58,7 @@ public class HistoricoController {
 	MunicipioRepository municipioRepo;
 	
 	@PostMapping("/historico/importar")
+	@Transactional(timeout = 600)
 	@ApiOperation(value = "Importa os históricos de venda por UPLOAD de arquivo CSV.")
 	public List<Historico> importarArquivo(@RequestParam MultipartFile arquivo) {
 		log.info(arquivo.getContentType());
@@ -162,6 +165,36 @@ public class HistoricoController {
 	@ApiOperation(value = "Retorna lista de Históricos cadastrados no sistema")
 	public List<Historico> getHistoricos() {
 		return this.historicoRepo.findAll();
+	}
+	
+	@GetMapping("/historico/uf/{uf}")
+	@ApiOperation(value = "Retorna lista de históricos pela UF")
+	public List<Historico> getHistoricoPorUf(@PathVariable String uf) {
+		
+		return historicoRepo.findByRevendaMunicipioEstadoUf(uf);
+	}
+	
+	/**
+	 * TODO Corrigir (nao deu tempo)
+	@GetMapping("/historico/preco/{uf}")
+	@ApiOperation(value = "Retorna média de preços por UF")
+	public List<IHistoricoMediaPorUf> getMediaPrecosPorUf(@PathVariable String uf) {
+		
+		return historicoRepo.findMediaPrecoCombustiveisPorUf(uf);
+	} */
+	
+	@GetMapping("/historico/regiao/{regiao}")
+	@ApiOperation(value = "Retorna lista de históricos pela UF")
+	public List<Historico> getHistoricoPorRegiao(@PathVariable String regiao) {
+		
+		return historicoRepo.findByRevendaMunicipioEstadoUf(regiao);
+	}
+	
+	@GetMapping("/historico/municipio/{municipio}")
+	@ApiOperation(value = "Retorna lista de históricos pela UF")
+	public List<Historico> getHistoricoPorNomeMunicipio(@PathVariable String municipio) {
+		
+		return historicoRepo.findByRevendaMunicipioNome(municipio);
 	}
 	
 	@GetMapping("/historico/{id}")
